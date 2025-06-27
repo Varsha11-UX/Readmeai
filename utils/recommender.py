@@ -1,16 +1,21 @@
-# utils/recommender.py
-
 import requests
 
 def get_books_by_genre(query):
     try:
+        # Fallback if query is empty or vague
         if not query or len(query.strip()) < 3:
             query = "fiction"
 
-        url = f"https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5"
+        # Replace spaces with + for better API query
+        search_term = query.replace(" ", "+")
+
+        url = f"https://www.googleapis.com/books/v1/volumes?q={search_term}&maxResults=5"
         response = requests.get(url)
         response.raise_for_status()
+
         books = response.json().get("items", [])
+        if not books:
+            print("DEBUG: No books found for query:", query)
 
         results = []
         for book in books:
