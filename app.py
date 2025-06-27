@@ -7,7 +7,24 @@ from utils.chatbot import ask_reading_buddy
 # Page setup
 st.set_page_config(page_title="ReadWise AI", page_icon="📚", layout="wide")
 
-# Background styling
+# Full-page background
+def set_background(image_file):
+    with open(image_file, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+    st.markdown(f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/png;base64,{b64}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+set_background("static/light_bg.png")
+
+# Section backgrounds
 def add_section_backgrounds():
     with open("static/recommendation_bg.png", "rb") as f:
         rec_b64 = base64.b64encode(f.read()).decode()
@@ -40,7 +57,7 @@ def add_section_backgrounds():
 
 add_section_backgrounds()
 
-# Banner
+# Header
 st.markdown("""
 <div style="background: linear-gradient(90deg, #ff914d, #ffcd8c); padding: 2rem; border-radius: 15px; text-align: center; color: white;">
     <h1>📚 ReadWise AI</h1>
