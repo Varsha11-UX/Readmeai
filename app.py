@@ -3,11 +3,11 @@
 import streamlit as st
 import os
 import base64
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from utils.recommender import get_books_by_genre
 from utils.chatbot import ask_reading_buddy
 
-load_dotenv()
+#load_dotenv()
 
 # -------------------------------
 # Page Setup
