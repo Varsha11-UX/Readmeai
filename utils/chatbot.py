@@ -9,7 +9,7 @@ def ask_reading_buddy(question):
             "Content-Type": "application/json"
         }
         payload = {
-            "model": "google/gemini-2.5-pro",  # 🔄 Updated model name
+            "model": "mistralai/mixtral-8x7b-instruct",   # 🔄 Updated model name
             "messages": [
                 {"role": "system", "content": "You are a helpful AI book companion. Recommend books, summarize, answer queries."},
                 {"role": "user", "content": question}
