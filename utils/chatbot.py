@@ -3,10 +3,8 @@ import httpx
 
 def ask_reading_buddy(question):
     api_key = st.secrets.get("OPENROUTER_API_KEY")
-
-    # 🛑 Check if API key is missing
     if not api_key:
-        return "🚫 API key not found. Please contact the developer."
+        return "🚫 API key not found. Please set OPENROUTER_API_KEY in your Streamlit secrets."
 
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -14,7 +12,7 @@ def ask_reading_buddy(question):
     }
 
     payload = {
-        "model": "mistralai/mixtral-8x7b-instruct",
+        "model": "openai/gpt-3.5-turbo",
         "messages": [
             {"role": "system", "content": "You are a helpful AI book companion. Recommend books, summarize, answer queries."},
             {"role": "user", "content": question}
@@ -33,7 +31,7 @@ def ask_reading_buddy(question):
 
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 401:
-            return "❌ Unauthorized. Check if your OpenRouter API key is valid."
+            return "❌ Unauthorized. Check your API key."
         return f"❌ Chatbot error: {e.response.status_code} - {e.response.text}"
 
     except Exception as e:
