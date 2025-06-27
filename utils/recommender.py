@@ -1,27 +1,47 @@
 import requests
 
 def get_books_by_genre(query):
+    return fetch_from_open_library(query)
+
+def fetch_from_open_library(query):
     try:
-        url = f"https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5"
-        print(f"🔗 Google Books URL: {url}")
+        url = f"https://openlibrary.org/search.json?q={query}&limit=5"
         response = requests.get(url)
         response.raise_for_status()
-        books = response.json().get("items", [])
-        print(f"✅ Google Books returned {len(books)} items")
-
+        data = response.json().get("docs", [])
         results = []
-        for book in books:
-            info = book.get("volumeInfo", {})
+
+        for book in data:
+            title = book.get("title", "Unknown Title")
+            authors = book.get("author_name", ["Unknown Author"])
+            cover_id = book.get("cover_i")
+            key = book.get("key", "")
+            info_link = f"https://openlibrary.org{key}"
+            thumbnail = f"https://covers.openlibrary.org/b/id/{cover_id}-M.jpg" if cover_id else "https://via.placeholder.com/100x150"
+
+            # 🔍 Fetch description from /works/<key>.json
+            desc = "No description available from Open Library."
+            if key:
+                work_url = f"https://openlibrary.org{key}.json"
+                work_response = requests.get(work_url)
+                if work_response.status_code == 200:
+                    work_data = work_response.json()
+                    if "description" in work_data:
+                        if isinstance(work_data["description"], dict):
+                            desc = work_data["description"].get("value", desc)
+                        else:
+                            desc = work_data["description"]
+
             results.append({
-                "title": info.get("title", "Unknown Title"),
-                "authors": info.get("authors", ["Unknown Author"]),
-                "description": info.get("description", "No description available."),
-                "thumbnail": info.get("imageLinks", {}).get("thumbnail", "https://via.placeholder.com/100x150"),
-                "info_link": info.get("infoLink", "#")
+                "title": title,
+                "authors": authors,
+                "description": desc,
+                "thumbnail": thumbnail,
+                "info_link": info_link
             })
 
         return results
 
     except Exception as e:
-        print("❌ Google Books error:", e)
+        print("❌ Open Library error:", e)
         return []
