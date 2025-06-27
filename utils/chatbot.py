@@ -1,25 +1,25 @@
-# chatbot.py (OpenRouter-ready, deployment-safe)
+# utils/chatbot.py
 
 import streamlit as st
 import httpx
 
 def ask_reading_buddy(question):
-    api_key = st.secrets["OPENROUTER_API_KEY"]
-
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": "mistralai/mixtral-8x7b-instruct",
-        "messages": [
-            {"role": "system", "content": "You are a helpful AI book companion. Recommend books, summarize, answer queries."},
-            {"role": "user", "content": question}
-        ]
-    }
-
     try:
+        api_key = st.secrets["OPENROUTER_API_KEY"]
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "model": "mistralai/mixtral-8x7b-instruct",
+            "messages": [
+                {"role": "system", "content": "You are a helpful AI book companion. Recommend books, summarize, answer queries."},
+                {"role": "user", "content": question}
+            ]
+        }
+
         response = httpx.post(
             "https://openrouter.ai/api/v1/chat/completions",
             json=payload,
