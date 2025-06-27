@@ -137,13 +137,11 @@ with tab3:
 
 # --- Surprise Me Section ---
 # --- 💡 Book Blink Section ---
+
 st.markdown("---")
 st.markdown("<h2 style='text-align:center;'>💡 Book Blink</h2>", unsafe_allow_html=True)
 
 if st.button("📖 Reveal a Random Blink!", key="surprise"):
-
-
-if st.button("✨ Click for a Surprise!", key="surprise"):
     quotes = [
         "“A reader lives a thousand lives before he dies.” – George R.R. Martin",
         "“Books are a uniquely portable magic.” – Stephen King",
