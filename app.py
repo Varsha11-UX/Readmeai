@@ -107,15 +107,33 @@ with tab2:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Tab 3: Buy Smart ---
+# --- Tab 3: Buy Smart ---
 with tab3:
     st.markdown('<div class="tab-section rec-tab">', unsafe_allow_html=True)
     st.subheader("🛍️ Search to Buy a Book")
-    title = st.text_input("Book title to search:", placeholder="e.g., Atomic Habits")
+
+    title = st.text_input("Search by book title:", placeholder="e.g., Atomic Habits")
+
     if title:
-        q = title.replace(" ", "+")
-        st.markdown(f"- 🛍️ [Amazon](https://www.amazon.in/s?k={q})")
-        st.markdown(f"- 🛒 [Flipkart](https://www.flipkart.com/search?q={q})")
+        with st.spinner("Fetching book info..."):
+            books = get_books_by_genre(title)
+
+        if not books:
+            st.warning("No book found.")
+        else:
+            book = books[0]  # show the top result
+            st.image(book["thumbnail"], width=120)
+            st.markdown(f"### {book['title']}")
+            st.markdown(f"**Authors:** {', '.join(book['authors'])}")
+            st.write(book["description"])
+
+            encoded = title.replace(" ", "+")
+            st.markdown("#### Buy Links:")
+            st.markdown(f"- 🛍️ [Buy on Amazon](https://www.amazon.in/s?k={encoded})")
+            st.markdown(f"- 🛒 [Buy on Flipkart](https://www.flipkart.com/search?q={encoded})")
+
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 # --- Surprise Me Section ---
 st.markdown("---")
