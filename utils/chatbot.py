@@ -1,38 +1,31 @@
-import os
+import streamlit as st
 import httpx
-from dotenv import load_dotenv
 
-load_dotenv()
+def ask_reading_buddy(question):
+    api_key = st.secrets["OPENROUTER_API_KEY"]
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
 
-api_key = os.getenv("OPENROUTER_API_KEY")
-
-def ask_reading_buddy(prompt):
-    if not api_key:
-        return "API key missing. Please set OPENROUTER_API_KEY in your .env file."
+    payload = {
+        "model": "mistralai/mixtral-8x7b-instruct",
+        "messages": [
+            {"role": "system", "content": "You are a helpful reading assistant."},
+            {"role": "user", "content": question}
+        ]
+    }
 
     try:
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "HTTP-Referer": "http://localhost:8501",
-            "X-Title": "ReadWise AI",
-        }
-
-        payload = {
-            "model": "gpt-4o-mini",  # ✅ Correct field and supported model
-            "messages": [{"role": "user", "content": prompt}],
-        }
-
         response = httpx.post(
             "https://openrouter.ai/api/v1/chat/completions",
-            headers=headers,
             json=payload,
-            timeout=15
+            headers=headers,
+            timeout=20
         )
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]
 
-        if response.status_code == 200:
-            return response.json()['choices'][0]['message']['content']
-        else:
-            return f"❌ Chatbot error: {response.status_code} - {response.text}"
-
-    except Exception as e:
-        return f"❌ Chatbot exception: {str(e)}"
+    except httpx.HTTPStatusError as e:
+        return f"❌ Chatbot error: {e.response.status_code} - {e.response.text}"
