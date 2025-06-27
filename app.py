@@ -159,3 +159,14 @@ if st.button("📖 Reveal a Random Blink!", key="surprise"):
     st.markdown(f"**📚 Quote:** {random.choice(quotes)}")
     st.markdown(f"**📘 Book Pick:** {random.choice(books)}")
     st.markdown(f"<i>{random.choice(poems)}</i>", unsafe_allow_html=True)
+    st.markdown("---")
+st.markdown("""
+<div style='text-align: center; font-size: 0.8em; color: gray;'>
+    📚 Data from <a href='https://openlibrary.org/developers/api' target='_blank'>Open Library</a> |
+    💬 AI via <a href='https://openrouter.ai/' target='_blank'>OpenRouter</a> |
+    🎨 Built with ❤️ using Streamlit  
+    <br>
+    © 2025 Varsha T. All rights reserved.
+</div>
+""", unsafe_allow_html=True)
+
