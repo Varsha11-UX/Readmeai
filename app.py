@@ -1,27 +1,46 @@
 import streamlit as st
+import base64
+import random
 from utils.recommender import get_books_by_genre
 from utils.chatbot import ask_reading_buddy
 
+# Page setup
 st.set_page_config(page_title="ReadWise AI", page_icon="📚", layout="wide")
 
-# Optional: Background (comment if causing issues)
-# def set_background():
-#     st.markdown(
-#         f"""
-#         <style>
-#         .stApp {{
-#             background-image: url("https://images.unsplash.com/photo-1535909339361-5877921a7d4b");
-#             background-size: cover;
-#             background-position: center;
-#             background-repeat: no-repeat;
-#         }}
-#         </style>
-#         """,
-#         unsafe_allow_html=True
-#     )
-# set_background()
+# Background styling
+def add_section_backgrounds():
+    with open("static/recommendation_bg.png", "rb") as f:
+        rec_b64 = base64.b64encode(f.read()).decode()
+    with open("static/chatbot_bg.png", "rb") as f:
+        chat_b64 = base64.b64encode(f.read()).decode()
 
-# Title banner
+    st.markdown(f"""
+    <style>
+    .tab-section {{
+        background-size: cover;
+        background-position: center;
+        border-radius: 12px;
+        padding: 2rem;
+        position: relative;
+        color: white;
+    }}
+    .rec-tab {{ background-image: url("data:image/png;base64,{rec_b64}"); }}
+    .chat-tab {{ background-image: url("data:image/png;base64,{chat_b64}"); }}
+    .tab-section::before {{
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(0,0,0,0.4);
+        border-radius: 12px;
+        z-index: 0;
+    }}
+    .tab-section * {{ z-index: 1; position: relative; }}
+    </style>
+    """, unsafe_allow_html=True)
+
+add_section_backgrounds()
+
+# Banner
 st.markdown("""
 <div style="background: linear-gradient(90deg, #ff914d, #ffcd8c); padding: 2rem; border-radius: 15px; text-align: center; color: white;">
     <h1>📚 ReadWise AI</h1>
@@ -29,11 +48,14 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# Tabs
 tab1, tab2, tab3 = st.tabs(["📖 Recommendations", "🤖 Chatbot", "🛍️ Buy Smart"])
 
+# --- Tab 1: Recommendations ---
 with tab1:
+    st.markdown('<div class="tab-section rec-tab">', unsafe_allow_html=True)
     st.subheader("📖 Mood/Genre-Based Book Recommendations")
-    query = st.text_input("Enter your mood or favorite genre (e.g., happy, sci-fi, historical):")
+    query = st.text_input("Enter your mood or genre (e.g., happy, sci-fi, historical):")
 
     if st.button("🔍 Get Recommendations"):
         if not query:
@@ -50,8 +72,11 @@ with tab1:
                     st.markdown(f"**Authors:** {', '.join(book['authors'])}")
                     st.write(book["description"])
                     st.markdown(f"[More Info 📘]({book['info_link']})")
+    st.markdown('</div>', unsafe_allow_html=True)
 
+# --- Tab 2: Chatbot ---
 with tab2:
+    st.markdown('<div class="tab-section chat-tab">', unsafe_allow_html=True)
     st.subheader("🤖 Ask Your Reading Buddy")
     user_input = st.text_area("💬 Ask something about books, quotes, genres...")
 
@@ -62,17 +87,20 @@ with tab2:
             st.success(reply)
         else:
             st.warning("Please enter a message.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
+# --- Tab 3: Buy Smart ---
 with tab3:
-    st.subheader("🛍️ Buy a Book Online")
-    title = st.text_input("Search a book to buy (e.g., Atomic Habits):")
+    st.markdown('<div class="tab-section rec-tab">', unsafe_allow_html=True)
+    st.subheader("🛍️ Search to Buy a Book")
+    title = st.text_input("Book title to search:", placeholder="e.g., Atomic Habits")
     if title:
         q = title.replace(" ", "+")
         st.markdown(f"- 🛍️ [Amazon](https://www.amazon.in/s?k={q})")
         st.markdown(f"- 🛒 [Flipkart](https://www.flipkart.com/search?q={q})")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# 🎁 Surprise Me
-import random
+# --- Surprise Me Section ---
 st.markdown("---")
 st.markdown("<h2 style='text-align:center;'>🎁 Surprise Me!</h2>", unsafe_allow_html=True)
 
