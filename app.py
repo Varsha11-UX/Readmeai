@@ -1,16 +1,16 @@
 import streamlit as st
 import os
 import base64
+from dotenv import load_dotenv
 from utils.recommender import get_books_by_genre
 from utils.chatbot import ask_reading_buddy
+import random
 
-# -------------------------------
-# Streamlit Setup
-# -------------------------------
+load_dotenv()
 st.set_page_config(page_title="ReadWise AI", page_icon="📚", layout="wide")
 
 # -------------------------------
-# Background Image Setup
+# Background
 # -------------------------------
 def set_background(image_file, selector=".stApp"):
     with open(image_file, "rb") as f:
@@ -30,12 +30,12 @@ def set_background(image_file, selector=".stApp"):
 set_background("static/light_bg.png")
 
 # -------------------------------
-# Theme Toggle
+# Theme toggle
 # -------------------------------
 theme = st.sidebar.radio("🎨 Theme", ["Light", "Dark"])
 
 # -------------------------------
-# Section Background Styling
+# Backgrounds for sections
 # -------------------------------
 def add_section_backgrounds():
     with open("static/recommendation_bg.png", "rb") as f:
@@ -76,14 +76,12 @@ add_section_backgrounds()
 # Banner
 # -------------------------------
 st.markdown(f"""
-<div style="
-    background: linear-gradient(90deg, #ff914d, #ffcd8c);
+<div style="background: linear-gradient(90deg, #ff914d, #ffcd8c);
     border-radius: 15px;
     padding: 40px 20px;
     text-align: center;
     color: white;
-    margin-bottom: 2rem;
-">
+    margin-bottom: 2rem;">
     <h1 style="font-size: 3em;">📚 ReadWise AI</h1>
     <p style="font-size: 1.2em;">
         Discover books that match your mood. Ask anything. Buy smarter.<br>
@@ -93,13 +91,13 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # -------------------------------
-# Tabs: Recommendations | Chat | Buy
+# Tabs
 # -------------------------------
 tab1, tab2, tab3 = st.tabs(["📖 Recommendations", "🤖 Reading Buddy", "🛍️ Buy Smart"])
 
-# ---------------------------------
+# -------------------------------
 # 📖 Recommendations Tab
-# ---------------------------------
+# -------------------------------
 with tab1:
     st.markdown('<div class="tab-section rec-tab">', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
@@ -115,45 +113,43 @@ with tab1:
         else:
             with st.spinner("🔎 Finding books..."):
                 books = get_books_by_genre(query)
-                st.write("🔍 DEBUG: Books fetched:", books)  # For debugging
 
             if not books:
                 st.error("😕 No results. Try a different mood or genre.")
             else:
+                st.markdown("### 📚 Recommended Books:")
                 for book in books:
                     with st.container():
                         cols = st.columns([1, 3])
                         with cols[0]:
-                            thumbnail = book.get("thumbnail", "https://via.placeholder.com/100x150")
-                            st.image(thumbnail, width=100)
+                            st.image(book["thumbnail"], width=100)
                         with cols[1]:
                             st.subheader(book["title"])
                             st.write("👩‍💻 **Authors:**", ", ".join(book["authors"]))
-                            st.write("📝 " + book["description"])
+                            st.write("📝", book["description"])
+                            st.markdown(f"[🔗 View on Open Library]({book['info_link']})", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------------------------------
+# -------------------------------
 # 🤖 Reading Buddy Tab
-# ---------------------------------
+# -------------------------------
 with tab2:
     st.markdown('<div class="tab-section chat-tab">', unsafe_allow_html=True)
     st.markdown("### Ask our intelligent reading buddy anything!")
 
     user_input = st.text_area("💬 Ask about books, quotes, or topics...")
-
     if st.button("🎙️ Get Response"):
         if user_input:
             with st.spinner("💡 Thinking..."):
                 response = ask_reading_buddy(user_input)
-                st.write("💬 DEBUG Response:", response)  # For debugging
                 st.success(response)
         else:
             st.warning("Please type something first.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------------------------------
+# -------------------------------
 # 🛍️ Buy Smart Tab
-# ---------------------------------
+# -------------------------------
 with tab3:
     st.markdown('<div class="tab-section rec-tab">', unsafe_allow_html=True)
     book_query = st.text_input("🔍 Search a book to buy...", placeholder="e.g., Atomic Habits")
@@ -166,10 +162,9 @@ with tab3:
         """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------------------------------
-# 🎁 Surprise Me Section
-# ---------------------------------
-import random
+# -------------------------------
+# 🎁 Surprise Me!
+# -------------------------------
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center; padding: 30px; background-color: #f9f5f2; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);'>
@@ -184,6 +179,7 @@ if st.button("✨ Click for a Surprise!", key="surprise_button", use_container_w
         "“Reading gives us someplace to go when we have to stay where we are.” – Mason Cooley",
         "“That’s the thing about books. They let you travel without moving your feet.” – Jhumpa Lahiri"
     ]
+
     random_books = [
         "📖 *The Alchemist* by Paulo Coelho",
         "📖 *Sapiens* by Yuval Noah Harari",
@@ -191,6 +187,7 @@ if st.button("✨ Click for a Surprise!", key="surprise_button", use_container_w
         "📖 *1984* by George Orwell",
         "📖 *To Kill a Mockingbird* by Harper Lee"
     ]
+
     random_poems = [
         "In quiet corners books do lie,<br>With tales that let the soul fly high.",
         "A turn of page, a twist, a start—<br>A story gently moves the heart.",
