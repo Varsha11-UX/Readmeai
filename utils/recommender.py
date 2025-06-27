@@ -2,13 +2,16 @@ import requests
 
 def get_books_by_genre(query):
     try:
+        # Use default query if input is too short or empty
         if not query or len(query.strip()) < 3:
             query = "fiction"
 
+        # Make the API request to Open Library
         url = f"https://openlibrary.org/search.json?q={query}&limit=5"
         response = requests.get(url, timeout=10)
         response.raise_for_status()
 
+        # Parse books
         books = response.json().get("docs", [])
         if not books:
             print("DEBUG: No books found on Open Library.")
